@@ -1,0 +1,88 @@
+# cell 0: loop counter (8)
+# cell 1: 8 * 13 = 104 (near 'i', 's', 't', 'w', 'o', 'r', 'k', 'n', 'g')
+# cell 2: 8 * 4  = 32  (space character ' ')
+# cell 3: 8 * 8  = 64  (near '?')
+
+INCR INCR INCR INCR  INCR INCR INCR INCR  # cell 0 = 8
+
+LOOP
+    NEXT 
+    INCR INCR INCR INCR  INCR INCR INCR INCR  
+    INCR INCR INCR INCR  INCR                 # cell 1 +13
+    
+    NEXT 
+    INCR INCR INCR INCR                       # cell 2 +4
+    
+    NEXT 
+    INCR INCR INCR INCR  INCR INCR INCR INCR  # cell 3 +8
+    
+    PREV PREV PREV # Back to Cell 0
+    DECR
+ENDL
+
+# printing "is"
+NEXT
+DECR DECR DECR DECR  DECR                     # 104 - 5 = 99 ('c')
+# Wait, 'i' is 105. 104 + 1 = 105. Let's fix Cell 1:
+INCR INCR INCR INCR  INCR INCR                # reset, 104 + 1 = 105 ('i')
+ECHO
+
+INCR INCR INCR INCR  INCR INCR INCR INCR  
+INCR INCR INCR INCR  INCR                     # 105 + 10 = 115 ('s')
+ECHO
+
+# printing space, " "
+NEXT ECHO                                     # cell 2 is exactly 32 (' ')
+
+# printing "this"
+PREV
+INCR INCR INCR INCR  INCR                     # 115 + 5 = 120 ('t')
+ECHO
+
+DECR DECR DECR DECR  DECR DECR DECR DECR  
+DECR DECR DECR DECR  DECR DECR DECR DECR  
+DECR DECR                                     # 120 - 18 = 102 ('f')
+INCR INCR INCR                                # 102 + 3 = 104 ('h')
+ECHO
+
+INCR                                          # 104 + 1 = 105 ('i')
+ECHO
+
+INCR INCR INCR INCR  INCR INCR INCR INCR  
+INCR INCR                                     # 105 + 10 = 115 ('s')
+ECHO
+
+# printing space, " "
+NEXT ECHO                                     # space ' '
+
+# printing "working"
+PREV
+INCR INCR INCR INCR  INCR INCR INCR INCR      # 115 + 4 = 119 ('w')
+ECHO
+
+DECR DECR DECR DECR  DECR DECR DECR DECR  
+DECR DECR DECR DECR  DECR                     # 119 - 13 = 106 ('j')
+INCR INCR INCR  INCR INCR                     # 106 + 5 = 111 ('o')
+ECHO
+
+INCR INCR INCR INCR  INCR INCR                # 111 + 3 = 114 ('r')
+ECHO
+
+DECR DECR DECR DECR  DECR DECR DECR           # 114 - 7 = 107 ('k')
+ECHO
+
+DECR DECR DECR DECR                           # 107 - 2 = 105 ('i')
+ECHO
+
+INCR INCR INCR INCR  INCR                     # 105 + 5 = 110 ('n')
+ECHO
+
+DECR DECR DECR DECR  DECR DECR DECR           # 110 - 7 = 103 ('g')
+ECHO
+
+# printing "?"
+NEXT NEXT                                     # move to cell 3 (64)
+DECR                                          # 64 - 1 = 63 ('?')
+ECHO
+
+NL # there we go, took wayyy too long
