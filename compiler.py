@@ -1,6 +1,7 @@
 import sys
 import os
 import subprocess
+import tempfile
 
 def optimize(code):
     # split by space, throw out everything that isn't a command
@@ -31,50 +32,68 @@ def main():
     infile = sys.argv[1]
     outfile = sys.argv[2] if len(sys.argv) > 2 else "a.out"
 
-    # read source - just crash if file doesn't exist, user's problem
-    with open(infile, "r") as f:
-        src = f.read()
-
+    # comment stripping logic fix (first issue)
+    clean_lines = []
+    try:
+        with open(infile, "r") as f:
+            for line in f:
+                clean_content = line.split('#')[0]
+                clean_lines.append(clean_content)
+    except FileNotFoundError:
+        print(f"Error: File '{infile}' not found.")
+        sys.exit(1)
+            
+    src = " ".join(clean_lines)
     tokens = optimize(src)
     
     # literally just brainf*** with words lol
     c_src = [
         "#include <stdio.h>",
         "int main() {",
-        "    char mem[30000] = {0};",
+        "    char mem[65536] = {0};", # Expanded memory buffer slightly for safety
         "    char *ptr = mem;"
     ]
 
+    # Dynamic indentation tracking for prettier C source code
+    indent = 4
     for tok, n in tokens:
-        if tok == "NEXT":   c_src.append(f"    ptr += {n};")
-        elif tok == "PREV": c_src.append(f"    ptr -= {n};")
-        elif tok == "INCR": c_src.append(f"    *ptr += {n};")
-        elif tok == "DECR": c_src.append(f"    *ptr -= {n};")
-        elif tok == "ECHO": c_src.append("    putchar(*ptr);")
-        elif tok == "SCAN": c_src.append("    *ptr = getchar();")
-        elif tok == "LOOP": c_src.append("    while (*ptr) {")
-        elif tok == "ENDL": c_src.append("    }")
-        elif tok == "NL":   c_src.append("    putchar('\\n');")
+        if tok == "ENDL": 
+            indent -= 4  # Un-indent before closing bracket
+            
+        space = " " * indent
+        
+        if tok == "NEXT":   c_src.append(f"{space}ptr += {n};")
+        elif tok == "PREV": c_src.append(f"{space}ptr -= {n};")
+        elif tok == "INCR": c_src.append(f"{space}*ptr += {n};")
+        elif tok == "DECR": c_src.append(f"{space}*ptr -= {n};")
+        elif tok == "ECHO": c_src.append(f"{space}putchar(*ptr);")
+        elif tok == "SCAN": c_src.append(f"{space}*ptr = getchar();")
+        elif tok == "LOOP": 
+            c_src.append(f"{space}while (*ptr) {{")
+            indent += 4  # Indent deeper for loop contents
+        elif tok == "ENDL": c_src.append(f"{space}}")
+        elif tok == "NL":   c_src.append(f"{space}putchar('\\n');")
 
     c_src.append("    return 0;")
     c_src.append("}")
 
-    # dump to temporary file and compile
-    tmp_name = f"_temp_{outfile}.c"
-    with open(tmp_name, "w") as f:
-        f.write("\n".join(c_src))
+    # dump to temporary file and compile (safely wrapped in context manager)
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".c", delete=False) as tmp:
+        tmp.write("\n".join(c_src))
+        tmp_name = tmp.name
 
-    cmd = ["gcc", "-O3", tmp_name, "-o", outfile]
-    res = subprocess.run(cmd)
-    
-    # cleanup temp file
-    if os.path.exists(tmp_name):
-        os.remove(tmp_name)
-
-    if res.returncode == 0:
-        print(f"compiled -> {outfile}")
-    else:
-        print("gcc threw an error.")
+    try:
+        cmd = ["gcc", "-O3", tmp_name, "-o", outfile]
+        res = subprocess.run(cmd)
+        
+        if res.returncode == 0:
+            print(f"compiled -> {outfile}")
+        else:
+            print("gcc threw an error.")
+    finally:
+        # cleanup temp file guaranteed
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
 
 if __name__ == "__main__":
     main()
