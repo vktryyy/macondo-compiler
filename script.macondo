@@ -80,4 +80,4 @@ NEXT NEXT                                     # move to cell 3 (64)
 DECR                                          # 64 - 1 = 63 ('?')
 ECHO
 
-NL # Output: "is this working?"
+NL # there we go that took wayyyyy too long
