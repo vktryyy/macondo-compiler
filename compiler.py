@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 def optimize(code):
-    # split by space, throw out everything that isn't a command
+    # split by space, throw out everything that isnt a command
     valid = {"NEXT", "PREV", "INCR", "DECR", "ECHO", "SCAN", "LOOP", "ENDL", "NL"}
     tokens = [t for t in code.split() if t in valid]
     
@@ -32,7 +32,6 @@ def main():
     infile = sys.argv[1]
     outfile = sys.argv[2] if len(sys.argv) > 2 else "a.out"
 
-    # comment stripping logic fix (first issue)
     clean_lines = []
     try:
         with open(infile, "r") as f:
@@ -50,15 +49,14 @@ def main():
     c_src = [
         "#include <stdio.h>",
         "int main() {",
-        "    char mem[65536] = {0};", # Expanded memory buffer slightly for safety
+        "    char mem[65536] = {0};",
         "    char *ptr = mem;"
     ]
 
-    # Dynamic indentation tracking for prettier C source code
     indent = 4
     for tok, n in tokens:
         if tok == "ENDL": 
-            indent -= 4  # Un-indent before closing bracket
+            indent -= 4
             
         space = " " * indent
         
@@ -70,14 +68,13 @@ def main():
         elif tok == "SCAN": c_src.append(f"{space}*ptr = getchar();")
         elif tok == "LOOP": 
             c_src.append(f"{space}while (*ptr) {{")
-            indent += 4  # Indent deeper for loop contents
-        elif tok == "ENDL": c_src.append(f"{space}}")
+            indent += 4
+        elif tok == "ENDL": c_src.append(f"{space}}}")
         elif tok == "NL":   c_src.append(f"{space}putchar('\\n');")
 
     c_src.append("    return 0;")
     c_src.append("}")
 
-    # dump to temporary file and compile (safely wrapped in context manager)
     with tempfile.NamedTemporaryFile(mode="w", suffix=".c", delete=False) as tmp:
         tmp.write("\n".join(c_src))
         tmp_name = tmp.name
@@ -91,7 +88,6 @@ def main():
         else:
             print("gcc threw an error.")
     finally:
-        # cleanup temp file guaranteed
         if os.path.exists(tmp_name):
             os.remove(tmp_name)
 
