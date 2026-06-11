@@ -22,13 +22,11 @@ ENDL
 
 # printing "is"
 NEXT
-DECR DECR DECR DECR  DECR                     # 104 - 5 = 99 ('c')
-# Wait, 'i' is 105. 104 + 1 = 105. Let's fix Cell 1:
-INCR INCR INCR INCR  INCR INCR                # reset, 104 + 1 = 105 ('i')
+INCR # 104 + 1 = 105 ('i')
 ECHO
 
 INCR INCR INCR INCR  INCR INCR INCR INCR  
-INCR INCR INCR INCR  INCR                     # 105 + 10 = 115 ('s')
+INCR INCR                                     # 105 + 10 = 115 ('s')
 ECHO
 
 # printing space, " "
@@ -36,13 +34,11 @@ NEXT ECHO                                     # cell 2 is exactly 32 (' ')
 
 # printing "this"
 PREV
-INCR INCR INCR INCR  INCR                     # 115 + 5 = 120 ('t')
+INCR                                          # 115 + 1 = 116 ('t')
 ECHO
 
 DECR DECR DECR DECR  DECR DECR DECR DECR  
-DECR DECR DECR DECR  DECR DECR DECR DECR  
-DECR DECR                                     # 120 - 18 = 102 ('f')
-INCR INCR INCR                                # 102 + 3 = 104 ('h')
+DECR DECR DECR DECR                           # 116 - 12 = 104 ('h')
 ECHO
 
 INCR                                          # 104 + 1 = 105 ('i')
@@ -57,21 +53,19 @@ NEXT ECHO                                     # space ' '
 
 # printing "working"
 PREV
-INCR INCR INCR INCR  INCR INCR INCR INCR      # 115 + 4 = 119 ('w')
+INCR INCR INCR INCR                           # 115 + 4 = 119 ('w')
 ECHO
 
-DECR DECR DECR DECR  DECR DECR DECR DECR  
-DECR DECR DECR DECR  DECR                     # 119 - 13 = 106 ('j')
-INCR INCR INCR  INCR INCR                     # 106 + 5 = 111 ('o')
+DECR DECR DECR DECR  DECR DECR DECR DECR      # 119 - 8 = 111 ('o')
 ECHO
 
-INCR INCR INCR INCR  INCR INCR                # 111 + 3 = 114 ('r')
+INCR INCR INCR                                # 111 + 3 = 114 ('r')
 ECHO
 
 DECR DECR DECR DECR  DECR DECR DECR           # 114 - 7 = 107 ('k')
 ECHO
 
-DECR DECR DECR DECR                           # 107 - 2 = 105 ('i')
+DECR DECR                                     # 107 - 2 = 105 ('i')
 ECHO
 
 INCR INCR INCR INCR  INCR                     # 105 + 5 = 110 ('n')
@@ -85,4 +79,4 @@ NEXT NEXT                                     # move to cell 3 (64)
 DECR                                          # 64 - 1 = 63 ('?')
 ECHO
 
-NL # there we go, took wayyy too long
+NL # there we go that took wayyy too long
