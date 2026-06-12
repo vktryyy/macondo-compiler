@@ -25,6 +25,6 @@ ENDL - Ends a loop. If the current cell isn't 0, jumps back to the matching LOOP
 
 NL - A custom shortcut that instantly prints a newline character (\n).
 
-Comments/#: Anything after a # is ignored by the compiler, so you can use it to write notes/track your math and whatnot.
+Comments/#: Anything after a # is ignored by the compiler, so you can use it to write notes and track your math.
 
 <img width="1828" height="230" alt="program" src="https://github.com/user-attachments/assets/37806b55-48be-4237-9ddb-af24bbc25257" />
