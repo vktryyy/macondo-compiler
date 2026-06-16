@@ -1,5 +1,8 @@
 # cell 0: loop counter (8)
 # cell 1: 8 * 13 = 104 (near 'i', 's', 't', 'w', 'o', 'r', 'k', 'n', 'g')
+
+# i literally just noticed the flaw in the comment above, but its been there for too long so ill just let it stay lmfao
+
 # cell 2: 8 * 4  = 32  (space character ' ')
 # cell 3: 8 * 8  = 64  (near '?')
 
