@@ -6,7 +6,7 @@ import tempfile
 def optimize(code):
     # split by space, throw out everything that isnt a command
     valid = {"NEXT", "PREV", "INCR", "DECR", "ECHO", "SCAN", "LOOP", "ENDL", "NL"}
-    tokens = [t for t in code.split() if t in valid]
+    tokens = [t for t in code.upper().split() if t in valid]
     
     # squash repeating instructions so gcc doesn't choke on huge files
     compressed = []
