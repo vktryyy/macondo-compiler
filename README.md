@@ -1,7 +1,7 @@
 # macondo-compiler
 A compiler/transpiler written in Python that turns a Brainf***-like language (Macondo) into highly optimized C.
 
-If you would like to try a quick little demo (not the best ui/ux, I know,) head over to https://macondo-compiler--vktryyy.replit.app/
+If you would like to try a quick little demo (not the best ui/ux, I know,) head over to https://macondo-compiler-v3.streamlit.app/
 
 
 
