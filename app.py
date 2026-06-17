@@ -7,7 +7,10 @@ import shutil
 # --- Copying your exact Compiler Logic (Streamlined for Web) ---
 def optimize(code):
     valid = {"NEXT", "PREV", "INCR", "DECR", "ECHO", "SCAN", "LOOP", "ENDL", "NL"}
-    tokens = [t for t in code.split() if t in valid]
+    # Strip comments out before running tokenizer
+    clean_lines = [line.split('#')[0] for line in code.splitlines()]
+    tokens = [t for line in clean_lines for t in line.split() if t in valid]
+    
     compressed = []
     i = 0
     while i < len(tokens):
@@ -50,17 +53,34 @@ def generate_c_code(macondo_code):
     c_src.append("}")
     return "\n".join(c_src)
 
-# --- Streamlit UI App ---
-st.set_page_config(page_title="Macondo Compiler Showcase", layout="wide")
+# --- Streamlit UI Configuration ---
+st.set_page_config(
+    page_title="Macondo Compiler IDE", 
+    page_icon="🇨🇴",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
+# Custom Styling inject
+st.markdown("""
+    <style>
+    .main .block-container { padding-top: 2rem; }
+    .stButton>button { width: 100%; border-radius: 8px; font-weight: 600; height: 3em; }
+    stTextArea textarea { font-family: 'Courier New', Courier, monospace; }
+    </style>
+""", unsafe_allow_html=True)
+
+# Title Area
 st.title("🇨🇴 The Macondo Language Compiler")
-st.subheader("A Brainfuck-to-C Compiler Written in Python")
+st.caption("An elegant, highly optimized Brainfuck-to-C IDE & runtime written in Python.")
+st.hr()
 
-# Sidebar Guide
+# Sidebar Documentation
 with st.sidebar:
-    st.header("📖 Macondo Syntax Guide")
+    st.header("📖 Language Syntax")
     st.markdown("""
-    Macondo is a verbose, readable alternative to Brainfuck. Here is the mapping:
+    **Macondo** is a verbose, highly readable mapping of Esoteric Brainfuck:
+    
     * `NEXT` : Move pointer right (`>`)
     * `PREV` : Move pointer left (`<`)
     * `INCR` : Increment byte (`+`)
@@ -70,18 +90,13 @@ with st.sidebar:
     * `LOOP` : Start loop (`[`)
     * `ENDL` : End loop (`]`)
     * `NL`   : Print a newline character
-    * `#`    : Comments are ignored
+    * `#`    : Comments are completely ignored
     """)
-    st.info("The compiler optimizes repeated instructions (e.g., 5 `INCR` tokens become `*ptr += 5;` in C).")
+    st.success("⚙️ Compiler optimization rolls consecutive matching tokens automatically!")
 
-# Layout columns
-col1, col2 = st.columns(2)
-
-with col1:
-    st.header("1. Write Macondo Code")
-    
-    # Default Hello World Example in Macondo
-    default_code = """# Hello World in Macondo
+# Code Examples Store
+examples = {
+    "Hello World": """# Hello World in Macondo
 INCR INCR INCR INCR INCR INCR INCR INCR LOOP
     NEXT INCR INCR INCR INCR LOOP
         NEXT INCR INCR NEXT INCR INCR INCR NEXT INCR INCR INCR NEXT INCR PREV PREV PREV PREV DECR
@@ -90,54 +105,84 @@ INCR INCR INCR INCR INCR INCR INCR INCR LOOP
 ENDL
 NEXT NEXT ECHO NEXT DECR DECR DECR ECHO INCR INCR INCR INCR INCR INCR INCR ECHO ECHO INCR INCR INCR ECHO
 NEXT NEXT ECHO PREV DECR ECHO PREV ECHO INCR INCR INCR ECHO DECR DECR DECR DECR DECR DECR ECHO
-DECR DECR DECR DECR DECR DECR DECR DECR ECHO NEXT NEXT INCR ECHO NEXT INCR INCR ECHO NL"""
+DECR DECR DECR DECR DECR DECR DECR DECR ECHO NEXT NEXT INCR ECHO NEXT INCR INCR ECHO NL""",
+    "Print 'A'": """# Simple program to print capital A (ASCII 65)
+INCR INCR INCR INCR INCR INCR LOOP
+    NEXT INCR INCR INCR INCR INCR INCR INCR INCR INCR INCR PREV DECR
+ENDL
+NEXT INCR INCR INCR INCR INCR ECHO NL"""
+}
 
-    user_code = st.text_area("Enter your code here:", value=default_code, height=350)
-    compile_btn = st.button("Compile & Run Code", type="primary")
+# App Main Layout
+col1, col2 = st.columns([1.1, 0.9], gap="large")
+
+with col1:
+    st.subheader("🖥️ Source Code Editor")
+    
+    # Example Selector
+    selected_example = st.selectbox("Load a sample Macondo program:", list(examples.keys()))
+    
+    # Text input
+    user_code = st.text_area(
+        "Write or modify your Macondo script:", 
+        value=examples[selected_example], 
+        height=420,
+        help="Type or paste your Macondo code here. Use '#' for line comments."
+    )
+    
+    compile_btn = st.button("🚀 Compile & Execute Program", type="primary")
 
 with col2:
-    st.header("2. Compiler Outputs")
+    st.subheader("📦 Build & Output Panel")
     
-    if compile_btn or user_code:
-        # 1. Generate C code
+    # Initialize compilation tabs
+    tab_c, tab_run = st.tabs(["📄 Generated C Code", "🏃 Execution Output"])
+    
+    # Generate C Code dynamically on input changes
+    if user_code.strip():
         c_output = generate_c_code(user_code)
-        
-        st.subheader("Generated C Source")
-        st.code(c_output, language="c")
-        
-        # 2. Compile and Run using System GCC
-        if compile_btn:
-            st.subheader("Execution Output")
-            compiler_path = shutil.which("gcc") or shutil.which("clang")
+        with tab_c:
+            st.code(c_output, language="c", line_numbers=True)
             
-            if not compiler_path:
-                st.error("Error: No C compiler found on the server environment. Ensure packages.txt includes 'gcc'.")
-            else:
-                # Use temp files to compile and run safely
-                with tempfile.TemporaryDirectory() as tmpdir:
-                    c_file_path = os.path.join(tmpdir, "main.c")
-                    exe_file_path = os.path.join(tmpdir, "app.out")
+        with tab_run:
+            if compile_btn:
+                with st.spinner("Compiling C binary with GCC..."):
+                    compiler_path = shutil.which("gcc") or shutil.which("clang")
                     
-                    with open(c_file_path, "w") as f:
-                        f.write(c_output)
-                    
-                    # Compile
-                    compile_proc = subprocess.run(
-                        [compiler_path, "-O3", c_file_path, "-o", exe_file_path],
-                        capture_output=True, text=True
-                    )
-                    
-                    if compile_proc.returncode != 0:
-                        st.error("GCC Compilation Failed:")
-                        st.code(compile_proc.stderr)
+                    if not compiler_path:
+                        st.error("❌ No native C compiler (gcc/clang) detected in this host environment.")
                     else:
-                        # Run binary
-                        try:
-                            run_proc = subprocess.run(
-                                [exe_file_path],
-                                capture_output=True, text=True, timeout=5
+                        with tempfile.TemporaryDirectory() as tmpdir:
+                            c_file_path = os.path.join(tmpdir, "main.c")
+                            exe_file_path = os.path.join(tmpdir, "app.out")
+                            
+                            with open(c_file_path, "w") as f:
+                                f.write(c_output)
+                            
+                            # Compile Step
+                            compile_proc = subprocess.run(
+                                [compiler_path, "-O3", c_file_path, "-o", exe_file_path],
+                                capture_output=True, text=True
                             )
-                            st.success("Program executed successfully!")
-                            st.code(run_proc.stdout if run_proc.stdout else "[Program executed with no output text]")
-                        except subprocess.TimeoutExpired:
-                            st.error("Execution timed out (Possible infinite loop in your Macondo code).")
+                            
+                            if compile_proc.returncode != 0:
+                                st.error("💥 C Compilation Error:")
+                                st.code(compile_proc.stderr, language="bash")
+                            else:
+                                # Execution Step
+                                try:
+                                    run_proc = subprocess.run(
+                                        [exe_file_path],
+                                        capture_output=True, text=True, timeout=4
+                                    )
+                                    st.info("💡 Program Return Status: Success")
+                                    
+                                    output_text = run_proc.stdout if run_proc.stdout else "[Program completed successfully with blank output]"
+                                    st.code(output_text, language="text")
+                                    
+                                except subprocess.TimeoutExpired:
+                                    st.error("⏳ Execution timed out! Your script might contain an infinite loop block.")
+            else:
+                st.info("Click **'Compile & Execute Program'** to run code.")
+    else:
+        st.warning("Please input some code in the workspace to preview compilation pipelines.")
