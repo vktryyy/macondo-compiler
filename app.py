@@ -68,7 +68,7 @@ st.markdown("""
 
 st.title("Macondo Compiler")
 st.caption("Highly optimized Brainf***-to-C IDE & runtime written in Python.")
-st.hr()
+st.divider()
 
 with st.sidebar:
     st.header("📖 Language Syntax")
