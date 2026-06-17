@@ -4,10 +4,8 @@ import tempfile
 import os
 import shutil
 
-# --- Copying your exact Compiler Logic (Streamlined for Web) ---
 def optimize(code):
     valid = {"NEXT", "PREV", "INCR", "DECR", "ECHO", "SCAN", "LOOP", "ENDL", "NL"}
-    # Strip comments out before running tokenizer
     clean_lines = [line.split('#')[0] for line in code.splitlines()]
     tokens = [t for line in clean_lines for t in line.split() if t in valid]
     
@@ -53,15 +51,13 @@ def generate_c_code(macondo_code):
     c_src.append("}")
     return "\n".join(c_src)
 
-# --- Streamlit UI Configuration ---
 st.set_page_config(
     page_title="Macondo Compiler IDE", 
-    page_icon="🇨🇴",
+    page_icon="👨‍💻",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling inject
 st.markdown("""
     <style>
     .main .block-container { padding-top: 2rem; }
@@ -70,16 +66,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Title Area
-st.title("🇨🇴 The Macondo Language Compiler")
-st.caption("An elegant, highly optimized Brainfuck-to-C IDE & runtime written in Python.")
+st.title("Macondo Compiler")
+st.caption("Highly optimized Brainf***-to-C IDE & runtime written in Python.")
 st.hr()
 
-# Sidebar Documentation
 with st.sidebar:
     st.header("📖 Language Syntax")
     st.markdown("""
-    **Macondo** is a verbose, highly readable mapping of Esoteric Brainfuck:
+    **Macondo** is a verbose, highly readable mapping of Esoteric Brainf***:
     
     * `NEXT` : Move pointer right (`>`)
     * `PREV` : Move pointer left (`<`)
@@ -94,7 +88,6 @@ with st.sidebar:
     """)
     st.success("⚙️ Compiler optimization rolls consecutive matching tokens automatically!")
 
-# Code Examples Store
 examples = {
     "Hello World": """# Hello World in Macondo
 INCR INCR INCR INCR INCR INCR INCR INCR LOOP
@@ -113,16 +106,13 @@ ENDL
 NEXT INCR INCR INCR INCR INCR ECHO NL"""
 }
 
-# App Main Layout
 col1, col2 = st.columns([1.1, 0.9], gap="large")
 
 with col1:
     st.subheader("🖥️ Source Code Editor")
     
-    # Example Selector
     selected_example = st.selectbox("Load a sample Macondo program:", list(examples.keys()))
     
-    # Text input
     user_code = st.text_area(
         "Write or modify your Macondo script:", 
         value=examples[selected_example], 
@@ -135,10 +125,8 @@ with col1:
 with col2:
     st.subheader("📦 Build & Output Panel")
     
-    # Initialize compilation tabs
-    tab_c, tab_run = st.tabs(["📄 Generated C Code", "🏃 Execution Output"])
+    tab_c, tab_run = st.tabs(["📄 Generated C Code", "🗣 Execution Output"])
     
-    # Generate C Code dynamically on input changes
     if user_code.strip():
         c_output = generate_c_code(user_code)
         with tab_c:
@@ -159,7 +147,6 @@ with col2:
                             with open(c_file_path, "w") as f:
                                 f.write(c_output)
                             
-                            # Compile Step
                             compile_proc = subprocess.run(
                                 [compiler_path, "-O3", c_file_path, "-o", exe_file_path],
                                 capture_output=True, text=True
@@ -169,7 +156,6 @@ with col2:
                                 st.error("💥 C Compilation Error:")
                                 st.code(compile_proc.stderr, language="bash")
                             else:
-                                # Execution Step
                                 try:
                                     run_proc = subprocess.run(
                                         [exe_file_path],
