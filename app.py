@@ -53,7 +53,7 @@ def generate_c_code(macondo_code):
 
 st.set_page_config(
     page_title="Macondo Compiler IDE", 
-    page_icon="👨‍💻",
+    page_icon="💻",
     layout="wide",
     initial_sidebar_state="expanded"
 )
