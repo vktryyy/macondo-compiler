@@ -1,9 +1,9 @@
 # macondo-compiler
 A compiler/transpiler written in Python that turns a Brainf***-like language (Macondo) into highly optimized C.
 
-If you would like to try a quick little demo (not the best ui/ux, I know,) head over to https://macondo-compiler-v3.streamlit.app/
+If you would like to try a quick little demo, head over to https://macondo-compiler-v3.streamlit.app/
 
-
+(AI NOTICE: the only file that contains ANY sort of AI generated or assisted code incldudes the 'app.py' file over in the 'streamlit' branch to provide the styling and frontend of the website with my own polish inlcuded)
 
 Command Reference:
 
