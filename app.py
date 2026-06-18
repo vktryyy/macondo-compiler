@@ -129,9 +129,14 @@ with col2:
     
     if user_code.strip():
         c_output = generate_c_code(user_code)
+        
         with tab_c:
-            st.code(c_output, language="c", line_numbers=True)
-            
+            # ONLY show C code if the button is pressed
+            if compile_btn:
+                st.code(c_output, language="c", line_numbers=True)
+            else:
+                st.info("Click **'Compile & Execute Program'** to generate C code.")
+                
         with tab_run:
             if compile_btn:
                 with st.spinner("Compiling C binary with GCC..."):
